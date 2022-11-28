@@ -115,13 +115,22 @@ class Player(turtle.Turtle):
                 self.hp = self.hp - enemy.atk
 
 
-class Enemy:
+class Enemy(turtle.Turtle):
     """ Defind enemy object and stat"""
-    def __init__(self, atk=4 ,level=0, hp=1 ,player=0):
+    def __init__(self,start_point=None,atk=4 ,level=0, hp=1 ,player=0):
+        turtle.Turtle.__init__(self, visible=False)
+        self.shape("turtle")
+        self.color("red")
+        init_speed = self.speed()
+        self.speed(0)
+        self.penup()
+        self.setx(start_point[0][0])
+        self.sety(start_point[0][1])
+        self.speed(init_speed)
+        self.showturtle()
         self.level = level
         self.hp = hp
         self.atk = atk
-        self.all_enemy = []
         self.player = player
 
     @property
@@ -153,29 +162,14 @@ class Enemy:
         self.__atk = atk
 
 
-    def create_enemy(self):
-        start_point = [[0,600],[600,0],[0,-600],[-600,0]]
-        enemy = turtle.Turtle(visible=False)
-        random.shuffle(start_point)
-        enemy.shape("turtle")
-        enemy.color("red")
-        init_speed = enemy.speed()
-        enemy.speed(0)
-        enemy.penup()
-        enemy.setx(start_point[0][0])
-        enemy.sety(start_point[0][1])
-        enemy.speed(init_speed)
-        enemy.showturtle()
-        self.all_enemy.append(enemy)
 
 
-
-    def move_to_player(self):
-        for enemy in self.all_enemy:
+    def move_to_player(self,all_enemy):
+        for enemy in all_enemy:
             enemy.speed("fastest")
             enemy.setheading(enemy.towards(self.player))
             enemy.forward(10)
-            # screen.ontimer(self.move_to_player, 1)
+        # screen.ontimer(self.move_to_player, 1)
 
     def bullet_hit(self,bullets):
         for enemy in self.all_enemy:
@@ -248,7 +242,7 @@ player = Player()
 score = Score()
 # player_dict = {'hp':player.hp, 'level': player.level, 'score': player.score }
 bullet = Bullet(player)
-enemy = Enemy(4,0,1,player)
+
 
 
 
@@ -259,20 +253,22 @@ screen.onkeypress(fun=player.move_up,key='w')
 screen.onkeypress(fun=player.move_down,key='s')
 screen.onkeypress(fun=player.move_left,key='a')
 screen.onkey(fun=bullet.shoot,key='Return')
-
+all_enemy = []
 # run game
 game_is_on = True
 while game_is_on:
-    # time.sleep(0)
     screen.update()
-    enemy.create_enemy()
-    enemy.move_to_player()
+    start_point = [[0, 600], [600, 0], [0, -600], [-600, 0]]
+    random.shuffle(start_point)
+    enemy = Enemy(start_point=start_point,atk=4, level=0, hp=1, player=player)
+    all_enemy.append(enemy)
+    enemy.move_to_player(all_enemy)
 
-    for i in range(len(enemy.all_enemy.copy())):
-        for j in range(len(bullet.bullet_list.copy())):
-            if enemy.all_enemy[i].distance(bullet.bullet_list[j]) < 35:
-                enemy.all_enemy.pop(i)
-                bullet.bullet_list.pop(j)
+    # for i in range(len(enemy.all_enemy.copy())):
+    #     for j in range(len(bullet.bullet_list.copy())):
+    #         if enemy.all_enemy[i].distance(bullet.bullet_list[j]) < 35:
+    #             enemy.all_enemy.pop(i)
+    #             bullet.bullet_list.pop(j)
 
 
 
