@@ -180,46 +180,62 @@ class Enemy(turtle.Turtle):
                 bullets.hideturtle()
 
 
-class Bullet:
-    def __init__(self,player):
+class Bullet(turtle.Turtle):
+    def __init__(self,player,state,all_enemy):
         self.player = player
-        self.bullet_list = []
+        turtle.Turtle.__init__(self,shape="arrow",visible=False)
+        self.shapesize(0.1, 0.75, 0.1)
+        self.color("black")
+        init_speed = self.speed()
+        self.speed(0)
+        self.penup()
+        self.setx(1000)
+        self.sety(1000)
+        self.speed(init_speed)
+        self.state =state
+        self.all_enemy = all_enemy
 
-    def bullet_list_getter(self):
-        return self.bullet_list
-
-    def create_bullet(self):
-        x,y =self.player.get_coordinate()
-        bullet = turtle.Turtle(shape="arrow",visible=False)
-        bullet.shapesize(0.1, 0.75, 0.1)
-        bullet.color("black")
-        init_speed = bullet.speed()
-        bullet.speed(0)
-        bullet.penup()
-        bullet.setx(x)
-        bullet.sety(y)
-        bullet.speed(init_speed)
-        self.bullet_list.append(bullet)
-        return bullet
-
-
-    def move(self,bullet):
-        x = bullet.xcor()
-        y = bullet.ycor()
-        bullet.setheading(self.player.heading())
-        bullet.showturtle()
-        while (-600<x<600 and -600<y<600):
-            bullet.speed(10)
-            bullet.forward(100)
-            x = bullet.xcor()
-            y = bullet.ycor()
-        bullet.hideturtle()
+    @property
+    def state(self):
+        return self.__state
+    @state.setter
+    def state(self,state):
+        self.__state = state
 
 
+    def move(self):
+        x, y = self.player.get_coordinate()
+        init_speed = self.speed()
+        self.speed(0)
+        self.setx(x)
+        self.sety(y)
+        self.speed(init_speed)
+        x = self.xcor()
+        y = self.ycor()
+        self.setheading(self.player.heading())
+        self.showturtle()
+        while -600 < x < 600 and -600 < y< 600 and self.state == True :
+            x = self.xcor()
+            y = self.ycor()
+            # self.bullet_hit()
+            # self.speed()
+            self.forward(50)
+            self.bullet_hit()
+        self.hideturtle()
 
-    def shoot(self):
-        bullet = self.create_bullet()
-        self.move(bullet)
+    def bullet_hit(self):
+        self.state = True
+        for i in self.all_enemy:
+            if self.distance(i) < 35:
+                self.state = False
+                i.hideturtle()
+                self.all_enemy.remove(i)
+
+        return self.state
+
+
+
+
 
 
 
@@ -241,7 +257,7 @@ class UIdisplay:
 player = Player()
 score = Score()
 # player_dict = {'hp':player.hp, 'level': player.level, 'score': player.score }
-bullet = Bullet(player)
+
 
 
 
@@ -252,35 +268,25 @@ screen.onkeypress(fun=player.move_right, key='d')
 screen.onkeypress(fun=player.move_up,key='w')
 screen.onkeypress(fun=player.move_down,key='s')
 screen.onkeypress(fun=player.move_left,key='a')
-screen.onkey(fun=bullet.shoot,key='Return')
+all_bullet = []
 all_enemy = []
 # run game
 game_is_on = True
 while game_is_on:
     screen.update()
-    start_point = [[0, 600], [600, 0], [0, -600], [-600, 0]]
-    random.shuffle(start_point)
-    enemy = Enemy(start_point=start_point,atk=4, level=0, hp=1, player=player)
-    all_enemy.append(enemy)
+    # create enemy
+
+    if len(all_enemy) < 10 :
+        start_point = [[0, 200], [600, 0], [0, -200], [-600, 0]]
+        random.shuffle(start_point)
+        enemy = Enemy(start_point=start_point,atk=4, level=0, hp=1, player=player)
+        all_enemy.append(enemy)
     enemy.move_to_player(all_enemy)
 
-    # for i in range(len(enemy.all_enemy.copy())):
-    #     for j in range(len(bullet.bullet_list.copy())):
-    #         if enemy.all_enemy[i].distance(bullet.bullet_list[j]) < 35:
-    #             enemy.all_enemy.pop(i)
-    #             bullet.bullet_list.pop(j)
-
-
-
-
-
-
-
-
-
-
-
-
+    # create bullet
+    bullet = Bullet(player, True,all_enemy)
+    screen.onkey(fun=bullet.move, key='Return')
+    all_bullet.append(bullet)
 
 
 
