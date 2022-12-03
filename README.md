@@ -106,7 +106,8 @@ this game contain 7 file is
 * static_score.py
 * data.txt
 
-
+### git hub url
+https://github.com/tnnpp/last-turtle
 
 
 
