@@ -1,7 +1,7 @@
 import turtle
 class Enemy(turtle.Turtle):
     """ Defind enemy object and stat"""
-    def __init__(self,start_point=None,atk=5 ,level=0, hp=1 ,player=0):
+    def __init__(self,start_point=None,atk=5 , hp=1 ,player=None):
         turtle.Turtle.__init__(self, visible=False)
         self.shape("turtle")
         self.color("red")
@@ -12,19 +12,9 @@ class Enemy(turtle.Turtle):
         self.sety(start_point[0][1])
         self.speed(init_speed)
         self.showturtle()
-        self.level = level
         self.hp = hp
         self.atk = atk
         self.player = player
-
-    @property
-    def level(self):
-        return self.__level
-    @level.setter
-    def level(self,level):
-        if not isinstance(level, int):
-            raise TypeError("level must be int")
-        self.__level = level
 
     @property
     def hp(self):

@@ -108,7 +108,7 @@ while game_is_on:
     if len(all_enemy) < 10 :
         start_point = [[0, 300], [600, 0], [0, -300], [-600, 0]]
         random.shuffle(start_point)
-        enemy = Enemy(start_point=start_point,atk=5, level=0, hp=1, player=player)
+        enemy = Enemy(start_point=start_point,atk=5, hp=1, player=player)
         all_enemy.append(enemy)
     enemy.move_to_player(all_enemy)
 

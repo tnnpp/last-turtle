@@ -60,6 +60,5 @@ class Bullet(turtle.Turtle):
                     self.score.score = self.score.score + 25
                     self.uidisplay.show_score()
                     self.score.score_player_cal += 25
-                    self.score.score_enemy_cal += 25
 
         return self.state
